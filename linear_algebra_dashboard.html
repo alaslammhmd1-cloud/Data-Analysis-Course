@@ -8,15 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- استخدام إصدار مستقر من PyScript -->
+    <!-- استخدام إصدار مستقر من PyScript مع خاصية defer لمنع أخطاء التحميل -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
     <script src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
     
-    <!-- استخدام صيغة JSON الدقيقة لتجنب أخطاء قراءة المكتبات -->
-    <py-config type="json">
-    {
-        "packages": ["numpy", "scikit-learn"]
-    }
+    <!-- الصيغة القياسية المعتمدة لتحميل المكتبات في PyScript -->
+    <py-config>
+        packages = ["numpy", "scikit-learn"]
     </py-config>
 
     <script>
@@ -744,9 +742,12 @@ print(eigenvectors)
                             ⏳ جاري تحميل بيئة بايثون والمكتبات (numpy, scikit-learn)... يرجى الانتظار بضع ثوانٍ.
                         </div>
                         
-                        <!-- كود بايثون لتحديث المؤشر عند اكتمال التحميل -->
+                        <!-- كود بايثون لتحديث المؤشر عند اكتمال التحميل مع استدعاء المكتبات إجبارياً -->
                         <py-script>
 import js
+import numpy as np
+import sklearn
+
 status_el = js.document.getElementById('pyscript-status')
 status_el.innerText = "✅ بيئة بايثون جاهزة تماماً! يمكنك الآن تشغيل الكود بالضغط على زر التشغيل الأخضر (أو Shift+Enter)."
 status_el.className = "text-green-700 font-bold mb-4 bg-green-50 p-3 rounded border border-green-200 shadow-inner"
