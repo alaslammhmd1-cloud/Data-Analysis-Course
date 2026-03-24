@@ -8,11 +8,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- استخدام إصدار مستقر من PyScript لضمان التوافق التام مع Streamlit -->
+    <!-- استخدام إصدار مستقر من PyScript -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
     <script src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
-    <py-config>
-        packages = ["numpy", "scikit-learn"]
+    
+    <!-- استخدام صيغة JSON الدقيقة لتجنب أخطاء قراءة المكتبات -->
+    <py-config type="json">
+    {
+        "packages": ["numpy", "scikit-learn"]
+    }
     </py-config>
 
     <script>
@@ -49,10 +53,7 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* * [مهم جداً] حل مشكلة اختفاء محرر PyScript:
-         * بدلاً من display: none، نقوم بإزاحة التبويبات المخفية خارج الشاشة
-         * للسماح للمحرر بحساب أبعاده بشكل صحيح عند التحميل.
-         */
+        /* حل مشكلة اختفاء محرر PyScript عبر الإزاحة بدلاً من الإخفاء */
         .tab-pane {
             position: absolute !important;
             top: -9999px !important;
@@ -80,7 +81,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* PyScript specific styling for Arabic layout */
+        /* PyScript specific styling */
         py-repl {
             direction: ltr;
             text-align: left;
@@ -125,7 +126,7 @@
                 <div id="acc-content-2" class="accordion-content open bg-stone-50">
                     <div class="flex flex-col p-2 space-y-1">
                         <button class="tab-btn w-full text-right px-4 py-2 rounded-md font-medium text-slate-600 hover:bg-stone-200 transition-colors" data-target="section-pca">سادساً. تحليل المركبات الأساسية</button>
-                        <button class="tab-btn w-full text-right px-4 py-2 rounded-md font-medium text-slate-600 hover:bg-stone-200 transition-colors border border-blue-200 bg-blue-50 mt-2" data-target="section-ide">💻 محرر بايثون التفاعلي</button>
+                        <button class="tab-btn w-full text-right px-4 py-2 rounded-md font-medium text-slate-600 hover:bg-stone-200 transition-colors border border-blue-200 bg-blue-50 mt-2" data-target="section-ide">💻 بيئة بايثون و Colab</button>
                     </div>
                 </div>
             </div>
@@ -690,91 +691,80 @@ print(eigenvectors)
                     </div>
                 </div>
 
-                <!-- Python Code Box -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-slate-700 python-box">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between">
-                        <span>🐍 بايثون: تحليل المركبات الأساسية (Scikit-Learn)</span>
-                        <span>Python</span>
-                    </div>
-                    <div class="flex flex-col md:flex-row">
-                        <div class="python-code p-5 md:w-1/2 whitespace-pre text-xs overflow-x-auto leading-relaxed">
-import numpy as np
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-
-# 1. جدول البيانات (5 أفراد، 2 متغيرات)
-X = np.array([[2.5, 2.4], [0.5, 0.7], [2.2, 2.9], 
-              [1.9, 2.2], [3.1, 3.0]])
-
-# 2. توحيد البيانات (Centrées Réduites)
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# 3. حساب ACP وتقليلها لمحور واحد (PC1)
-pca = PCA(n_components=1)
-pca.fit(X_scaled)
-
-print("نسبة التباين المفسر:")
-print(pca.explained_variance_ratio_)
-
-print("\nالأشعة الذاتية (المحاور الجديدة):")
-print(pca.components_)
-                        </div>
-                        <div class="python-output p-5 md:w-1/2 whitespace-pre text-xs overflow-x-auto flex flex-col justify-center">
-# النتائج (Output):
-
-نسبة التباين المفسر:
-[0.98205461] 
-# (أي حافظنا على 98% من المعلومات في محور واحد)
-
-الأشعة الذاتية (المحاور الجديدة):
-[[0.70710678 0.70710678]]
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </section>
 
-        <!-- ================= SECTION IDE: Python Interactive REPL ================= -->
+        <!-- ================= SECTION IDE: Python Interactive REPL & Colab ================= -->
         <section id="section-ide" class="tab-pane max-w-5xl mx-auto pb-10">
             <div class="bg-white rounded-xl shadow-sm p-8 border border-stone-200 mb-8">
                 
                 <div class="flex items-center gap-4 mb-6 border-b pb-4">
                     <div class="bg-blue-100 text-blue-800 p-3 rounded-full text-2xl">💻</div>
-                    <h2 class="text-3xl font-bold text-blue-800">سابعاً. محرر بايثون التفاعلي (بيئة العمل)</h2>
-                </div>
-                
-                <div class="mb-6">
-                    <p class="text-slate-700 text-lg leading-relaxed bg-blue-50 p-5 rounded-lg border border-blue-100">
-                        هذه البيئة تتيح لك <strong>كتابة وتعديل وتشغيل أكواد بايثون الحقيقية</strong> مباشرة من متصفحك! 
-                        <br>
-                        البيئة مزودة مسبقاً بمكتبات <code>numpy</code> و <code>scikit-learn</code> لتطبيق الأمثلة السابقة. 
-                        <span class="text-sm font-bold text-blue-800 block mt-2">(ملاحظة: عند الدخول لأول مرة قد يستغرق تهيئة بيئة بايثون بضع ثوانٍ.. يرجى الانتظار حتى يظهر زر التشغيل الأخضر أسفل المحرر).</span>
-                    </p>
+                    <h2 class="text-3xl font-bold text-blue-800">بيئة بايثون وتكامل Google Colab</h2>
                 </div>
 
+                <!-- خيارات بيئة العمل -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    
+                    <!-- كرت Google Colab -->
+                    <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center text-center">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Google_Colaboratory_SVG_Logo.svg" alt="Colab Logo" class="h-16 mb-4">
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">Google Colab (السحابة)</h3>
+                        <p class="text-slate-600 mb-4 text-sm leading-relaxed">
+                            انتقل إلى بيئة جوجل السحابية لتشغيل الأكواد المتقدمة (كتحليل البيانات الضخمة). يحفظ تقدمك ويسمح بمشاركة الدفاتر بسهولة.
+                        </p>
+                        <a href="https://colab.research.google.com/" target="_blank" class="mt-auto flex items-center justify-center gap-2 bg-[#f8f9fa] hover:bg-[#e2e8f0] border border-slate-300 text-slate-700 px-6 py-2 rounded-lg font-bold transition shadow-sm">
+                            <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+                        </a>
+                    </div>
+
+                    <!-- كرت PyScript المدمج -->
+                    <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center text-center">
+                        <div class="text-5xl mb-4">⚡</div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">PyScript (مدمج)</h3>
+                        <p class="text-slate-600 mb-4 text-sm leading-relaxed">
+                            جرب الأكواد البسيطة فوراً داخل هذه الصفحة دون الحاجة لمغادرتها أو تسجيل الدخول. البيئة مدعومة بمكتبات `numpy` و `scikit-learn`.
+                        </p>
+                        <button class="mt-auto bg-blue-50 text-blue-800 px-6 py-2 rounded-lg font-bold cursor-default border border-blue-200">
+                            البيئة جاهزة بالأسفل 👇
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- PyScript REPL -->
                 <div class="rounded-xl overflow-hidden shadow-lg border border-slate-300">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold">
-                        <span>مساحة العمل (Workspace) - جرب تعديل البيانات واضغط Shift+Enter للتشغيل</span>
+                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between items-center">
+                        <span>مساحة العمل المدمجة - اكتب الكود واضغط Shift+Enter للتشغيل</span>
                     </div>
                     <div class="bg-white p-4">
-                        <!-- مساحة بيئة العمل التفاعلية من PyScript -->
+                        
+                        <!-- مؤشر التحميل الذكي يخبر المستخدم بحالة البيئة -->
+                        <div id="pyscript-status" class="text-orange-600 font-bold mb-4 bg-orange-50 p-3 rounded border border-orange-200 shadow-inner">
+                            ⏳ جاري تحميل بيئة بايثون والمكتبات (numpy, scikit-learn)... يرجى الانتظار بضع ثوانٍ.
+                        </div>
+                        
+                        <!-- كود بايثون لتحديث المؤشر عند اكتمال التحميل -->
+                        <py-script>
+import js
+status_el = js.document.getElementById('pyscript-status')
+status_el.innerText = "✅ بيئة بايثون جاهزة تماماً! يمكنك الآن تشغيل الكود بالضغط على زر التشغيل الأخضر (أو Shift+Enter)."
+status_el.className = "text-green-700 font-bold mb-4 bg-green-50 p-3 rounded border border-green-200 shadow-inner"
+                        </py-script>
+
                         <py-repl>
-# أهلاً بك في بيئة العمل التفاعلية!
+# أهلاً بك في بيئة العمل التفاعلية المدمجة!
 import numpy as np
 from sklearn.decomposition import PCA
 
 print("---- 1. تجربة المصفوفات ----")
-# جرب تعديل المصفوفة A
 A = np.array([[1, 2], [3, 4]])
 print("المصفوفة A:\n", A)
 
 det = np.linalg.det(A)
 print("\nمحدد المصفوفة A:", round(det))
 
-print("\n\n---- 2. تجربة تحليل المركبات (PCA) ----")
-# جرب إضافة نقاط جديدة (أفراد جدد)
+print("\n\n---- 2. تجربة تحليل المركبات الأساسية (PCA) ----")
 X = np.array([
     [2.5, 2.4], 
     [0.5, 0.7], 
@@ -819,7 +809,6 @@ print(pca.explained_variance_ratio_)
         
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                // Reset styling for all tabs menu
                 tabs.forEach(t => {
                     t.classList.remove('bg-blue-100', 'text-blue-800');
                     t.classList.add('text-slate-600');
@@ -829,11 +818,9 @@ print(pca.explained_variance_ratio_)
                     }
                 });
                 
-                // Set active styling for menu
                 tab.classList.remove('text-slate-600', 'hover:bg-stone-200', 'border', 'border-blue-200', 'bg-blue-50');
                 tab.classList.add('bg-blue-100', 'text-blue-800');
                 
-                // Show content by adding active class, removing from others
                 contents.forEach(c => c.classList.remove('active'));
                 document.getElementById(tab.dataset.target).classList.add('active');
             });
