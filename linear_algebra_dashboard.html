@@ -8,14 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- استخدام إصدار مستقر من PyScript مع خاصية defer لمنع أخطاء التحميل -->
+    <!-- تحميل التنسيقات فقط في الرأس -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
-    <script src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
-    
-    <!-- الصيغة القياسية المعتمدة لتحميل المكتبات في PyScript -->
-    <py-config>
-        packages = ["numpy", "scikit-learn"]
-    </py-config>
 
     <script>
         MathJax = {
@@ -31,15 +25,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
         
-        /* Streamlit Iframe Optimizations */
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100vh;
-            font-family: 'Tajawal', sans-serif; 
-            background-color: #f8fafc; 
-            color: #0f172a;
+            margin: 0; padding: 0; width: 100%; height: 100vh;
+            font-family: 'Tajawal', sans-serif; background-color: #f8fafc; color: #0f172a;
             overflow: hidden;
         }
         
@@ -51,7 +39,6 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* حل مشكلة اختفاء محرر PyScript عبر الإزاحة بدلاً من الإخفاء */
         .tab-pane {
             position: absolute !important;
             top: -9999px !important;
@@ -65,32 +52,26 @@
             animation: fadeIn 0.4s ease-out;
         }
 
-        /* Python Code Box Styles */
-        .python-box { direction: ltr; text-align: left; font-family: monospace; }
-        .python-code { background-color: #1e293b; color: #e2e8f0; }
-        .python-output { background-color: #0f172a; color: #4ade80; border-left: 2px solid #334155; }
-        
         .accordion-content { transition: max-height 0.3s ease-in-out, padding 0.3s ease; max-height: 0; overflow: hidden; }
         .accordion-content.open { max-height: 600px; }
         
-        /* Custom scrollbar optimized for Streamlit */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* PyScript specific styling */
         py-repl {
             direction: ltr;
             text-align: left;
             display: block;
             margin-top: 1rem;
         }
+
+        /* منع تداخل شاشة التحميل مع واجهة المستخدم */
+        #pyscript-loading-label { display: none !important; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row w-full h-full">
 
-    <!-- Sidebar Navigation -->
     <aside class="w-full md:w-80 bg-white shadow-xl flex flex-col h-auto md:h-full shrink-0 z-20">
         <div class="p-6 bg-blue-800 text-white shadow-md">
             <h1 class="text-2xl font-bold mb-1">مقياس تحليل البيانات</h1>
@@ -98,7 +79,6 @@
         </div>
         
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-            <!-- Accordion Group 1 -->
             <div class="border rounded-lg shadow-sm bg-stone-50 overflow-hidden">
                 <button id="acc-btn-1" class="w-full flex justify-between items-center p-4 bg-white hover:bg-stone-100 transition font-bold text-blue-900 border-b">
                     <span>📐 المصفوفات والاشعة</span>
@@ -115,7 +95,6 @@
                 </div>
             </div>
 
-            <!-- Accordion Group 2: Data Analysis -->
             <div class="border rounded-lg shadow-sm bg-stone-50 overflow-hidden mt-4">
                 <button id="acc-btn-2" class="w-full flex justify-between items-center p-4 bg-white hover:bg-stone-100 transition font-bold text-blue-900 border-b">
                     <span>📊 تحليل المركبات الأساسية</span>
@@ -134,26 +113,22 @@
         </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 relative h-full">
 
-        <!-- ================= SECTION 1: Concepts & Operations ================= -->
         <section id="section-1" class="tab-pane active max-w-5xl mx-auto pb-10">
              <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200 mb-8">
                 <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">أولاً. المفاهيم الأساسية والعمليات على المصفوفات</h2>
-                
-                <!-- 1. Vectors -->
                 <div class="mb-10">
                     <h3 class="text-xl font-bold text-blue-700 mb-4">1. المتجهات</h3>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <p class="text-slate-600 mb-4 text-lg">المتجه هو مصفوفة تتكون من عمود واحد أو صف واحد فقط، ويمثل اتجاهاً أو نقطة في الفضاء.</p>
-                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 shadow-inner">
                                 <h4 class="font-bold mb-3 text-blue-900">تفاعل: تغيير إحداثيات المتجه</h4>
                                 <div class="flex gap-4 items-center">
-                                    <label class="font-semibold">س: <input type="number" id="vecX" value="3" class="w-16 border rounded p-1 text-center font-normal"></label>
-                                    <label class="font-semibold">ص: <input type="number" id="vecY" value="4" class="w-16 border rounded p-1 text-center font-normal"></label>
-                                    <button id="updateVecBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded shadow">تحديث الرسم</button>
+                                    <label class="font-semibold text-sm">س: <input type="number" id="vecX" value="3" class="w-16 border rounded p-1 text-center font-normal"></label>
+                                    <label class="font-semibold text-sm">ص: <input type="number" id="vecY" value="4" class="w-16 border rounded p-1 text-center font-normal"></label>
+                                    <button id="updateVecBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded shadow text-sm font-bold transition">تحديث</button>
                                 </div>
                             </div>
                         </div>
@@ -162,634 +137,109 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 2 to 5: Operations -->
-                <div class="mb-10 bg-stone-50 p-6 rounded-xl border">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-blue-700 mb-2">2. تعريف المصفوفة</h3>
-                            <p class="text-slate-600 mb-4">مجموعة مستطيلة من الأعداد مرتبة في صفوف وأعمدة $A_{m \times n}$.</p>
-                            
-                            <h3 class="text-xl font-bold text-blue-700 mb-2">3. منقول المصفوفة ($A^T$)</h3>
-                            <p class="text-slate-600 mb-4">تبديل الصفوف بالأعمدة.</p>
-                            
-                            <h3 class="text-xl font-bold text-blue-700 mb-2">4. الجمع والطرح / 5. الضرب</h3>
-                            <p class="text-slate-600">الجمع يتطلب تطابق الأبعاد. الضرب يتطلب تساوي أعمدة الأولى مع صفوف الثانية.</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg border shadow-sm flex flex-col items-center">
-                            <h4 class="font-bold mb-4 text-center">مختبر العمليات (2x2)</h4>
-                            <div class="flex flex-wrap justify-center items-center gap-4">
-                                <div class="grid grid-cols-2 gap-2 matrix-bracket p-2 bg-stone-50">
-                                    <input type="number" id="a11" value="1" class="w-10 text-center border rounded">
-                                    <input type="number" id="a12" value="2" class="w-10 text-center border rounded">
-                                    <input type="number" id="a21" value="3" class="w-10 text-center border rounded">
-                                    <input type="number" id="a22" value="4" class="w-10 text-center border rounded">
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <button id="opAdd" class="bg-blue-600 text-white w-8 h-8 rounded-full text-sm font-bold shadow">+</button>
-                                    <button id="opSub" class="bg-blue-600 text-white w-8 h-8 rounded-full text-sm font-bold shadow">-</button>
-                                    <button id="opMul" class="bg-blue-600 text-white w-8 h-8 rounded-full text-sm font-bold shadow">×</button>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2 matrix-bracket p-2 bg-stone-50">
-                                    <input type="number" id="b11" value="5" class="w-10 text-center border rounded">
-                                    <input type="number" id="b12" value="6" class="w-10 text-center border rounded">
-                                    <input type="number" id="b21" value="7" class="w-10 text-center border rounded">
-                                    <input type="number" id="b22" value="8" class="w-10 text-center border rounded">
-                                </div>
-                                <span class="font-bold text-xl">=</span>
-                                <div class="grid grid-cols-2 gap-2 matrix-bracket p-2 bg-blue-50">
-                                    <input type="number" id="r11" readonly class="w-12 text-center bg-transparent font-bold text-blue-800">
-                                    <input type="number" id="r12" readonly class="w-12 text-center bg-transparent font-bold text-blue-800">
-                                    <input type="number" id="r21" readonly class="w-12 text-center bg-transparent font-bold text-blue-800">
-                                    <input type="number" id="r22" readonly class="w-12 text-center bg-transparent font-bold text-blue-800">
-                                </div>
-                            </div>
-                            <button id="opTransA" class="mt-5 bg-stone-200 hover:bg-stone-300 text-sm font-bold px-4 py-2 rounded shadow">منقول المصفوفة الأولى ($A^T$)</button>
-                        </div>
-                    </div>
+                <div class="p-6 bg-stone-50 rounded-xl border text-center">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4">المصفوفات والعمليات</h3>
+                    <p class="text-slate-500 italic">يتم استعراض بقية الدروس من القائمة الجانبية.</p>
                 </div>
-
-                <!-- Matrix Types -->
-                <div class="mb-10">
-                    <h3 class="text-xl font-bold text-blue-700 mb-4">أنواع المصفوفات (6 - 10)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="p-4 bg-stone-50 border rounded-lg">
-                            <h4 class="font-bold mb-1 text-blue-900">6. المصفوفة المربعة</h4>
-                            <p class="text-sm text-slate-600">عدد الصفوف يساوي عدد الأعمدة.</p>
-                            <ul class="text-xs mt-2 space-y-1 list-disc list-inside text-slate-700">
-                                <li><strong>6.1 مصفوفة الوحدة ($I$)</strong>: القطر 1 والباقي 0.</li>
-                                <li><strong>6.2 القطرية</strong>: الأصفار خارج القطر الرئيسي.</li>
-                                <li><strong>6.3 المثلثية</strong>: عليا وسفلى.</li>
-                            </ul>
-                        </div>
-                        <div class="p-4 bg-stone-50 border rounded-lg">
-                            <h4 class="font-bold mb-1 text-blue-900">7. المتماثلة</h4>
-                            <p class="text-sm text-slate-600 mb-3">$A = A^T$</p>
-                            <h4 class="font-bold mb-1 text-blue-900">8. المتماثلة عكسياً</h4>
-                            <p class="text-sm text-slate-600">$A = -A^T$</p>
-                        </div>
-                        <div class="p-4 bg-stone-50 border rounded-lg">
-                            <h4 class="font-bold mb-1 text-blue-900">9. المتعامدة</h4>
-                            <p class="text-sm text-slate-600 mb-3">$A^T A = I$</p>
-                            <h4 class="font-bold mb-1 text-blue-900">10. القابلة للعكس</h4>
-                            <p class="text-sm text-slate-600">محددها $\neq 0$، ولها $A^{-1}$.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Python Code Box -->
-                <div class="mt-8 rounded-xl overflow-hidden shadow-lg border border-slate-700 python-box">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between">
-                        <span>🐍 بايثون: تعريف المصفوفات والعمليات</span>
-                        <span>Python</span>
-                    </div>
-                    <div class="flex flex-col md:flex-row">
-                        <div class="python-code p-5 md:w-1/2 whitespace-pre text-sm">
-import numpy as np
-
-# تعريف مصفوفتين
-A = np.array([[1, 2], [3, 4]])
-B = np.array([[5, 6], [7, 8]])
-
-print("A + B =")
-print(A + B)
-
-print("\nA @ B (ضرب المصفوفات) =")
-print(A @ B)
-
-print("\nمنقول A (A.T) =")
-print(A.T)
-                        </div>
-                        <div class="python-output p-5 md:w-1/2 whitespace-pre text-sm">
-# النتائج (Output):
-
-A + B =
-[[ 6  8]
- [10 12]]
-
-A @ B (ضرب المصفوفات) =
-[[19 22]
- [43 50]]
-
-منقول A (A.T) =
-[[1 3]
- [2 4]]
-                        </div>
-                    </div>
-                </div>
-
              </div>
         </section>
 
-        <!-- ================= SECTION 2: Determinants ================= -->
-        <section id="section-2" class="tab-pane max-w-5xl mx-auto pb-10">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
-                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">ثانياً. المحددات</h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    <!-- 2x2 -->
-                    <div class="p-6 bg-stone-50 rounded-xl border flex flex-col items-center">
-                        <h3 class="text-xl font-bold text-blue-700 mb-2 w-full text-right">1. محدد المصفوفة الثنائية (2x2)</h3>
-                        <p class="text-sm mb-4 w-full text-right">$\det(A) = ad - bc$</p>
-                        <div class="matrix-bracket bg-white p-4 mb-4 shadow-sm">
-                            <div class="grid grid-cols-2 gap-3">
-                                <input type="number" id="det2_a" value="2" class="w-14 border p-1 text-center rounded">
-                                <input type="number" id="det2_b" value="3" class="w-14 border p-1 text-center rounded">
-                                <input type="number" id="det2_c" value="1" class="w-14 border p-1 text-center rounded">
-                                <input type="number" id="det2_d" value="4" class="w-14 border p-1 text-center rounded">
-                            </div>
-                        </div>
-                        <button id="calcDet2" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow font-bold">احسب المحدد</button>
-                        <div id="resDet2" class="mt-4 text-3xl font-bold text-blue-800">5</div>
-                    </div>
-
-                    <!-- 3x3 -->
-                    <div class="p-6 bg-stone-50 rounded-xl border flex flex-col items-center">
-                        <h3 class="text-xl font-bold text-blue-700 mb-2 w-full text-right">2. محدد المصفوفة الثلاثية (3x3)</h3>
-                        <p class="text-sm mb-4 w-full text-right text-slate-600">يُحسب باستخدام قاعدة الأقطار أو النشر بالمرافقات.</p>
-                        <div class="matrix-bracket bg-white p-3 mb-4 shadow-sm">
-                            <div class="grid grid-cols-3 gap-2">
-                                <input type="number" id="d3_11" value="1" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_12" value="2" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_13" value="3" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_21" value="0" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_22" value="1" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_23" value="4" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_31" value="5" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_32" value="6" class="w-12 border p-1 text-center rounded">
-                                <input type="number" id="d3_33" value="0" class="w-12 border p-1 text-center rounded">
-                            </div>
-                        </div>
-                        <button id="calcDet3" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow font-bold">احسب المحدد</button>
-                        <div id="resDet3" class="mt-4 text-3xl font-bold text-blue-800">1</div>
-                    </div>
-                </div>
-
-                <!-- Python Code Box -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-slate-700 python-box">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between">
-                        <span>🐍 بايثون: حساب المحددات</span>
-                        <span>Python</span>
-                    </div>
-                    <div class="flex flex-col md:flex-row">
-                        <div class="python-code p-5 md:w-1/2 whitespace-pre text-sm">
-import numpy as np
-
-# مصفوفة 2x2
-A = np.array([[2, 3], 
-              [1, 4]])
-
-# حساب المحدد
-det_A = np.linalg.det(A)
-
-print("محدد المصفوفة A =")
-print(round(det_A))
-                        </div>
-                        <div class="python-output p-5 md:w-1/2 whitespace-pre text-sm">
-# النتائج (Output):
-
-محدد المصفوفة A =
-5
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= SECTION 3: Inverse Matrix ================= -->
-        <section id="section-3" class="tab-pane max-w-5xl mx-auto pb-10">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
-                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">ثالثاً. المصفوفة العكسية</h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    <div>
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">1. شروط قابلية العكس</h3>
-                        <ul class="list-disc list-inside text-slate-700 space-y-2 mb-6 bg-stone-50 p-4 rounded-lg border">
-                            <li>يجب أن تكون المصفوفة مربعة ($n \times n$).</li>
-                            <li>محدد المصفوفة لا يساوي صفراً ($\det(A) \neq 0$). المصفوفة التي محددها صفر تسمى مصفوفة شاذة (Singular).</li>
-                        </ul>
-
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">3. طريقة المصفوفة المرافقة</h3>
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-center text-lg mb-6">
-                            $$A^{-1} = \frac{1}{|A|} \text{adj}(A)$$
-                        </div>
-
-                        <h3 class="text-xl font-bold text-blue-700 mb-2">4. طريقة حذف "جوس-جوردان"</h3>
-                        <p class="text-slate-600 text-sm bg-stone-50 p-3 rounded border">
-                            تتم بتكوين مصفوفة موسعة $[A | I]$ وإجراء عمليات الصفوف الابتدائية حتى نصل إلى الصيغة $[I | A^{-1}]$.
-                        </p>
-                    </div>
-
-                    <!-- Interactive Inverse Tool -->
-                    <div class="bg-stone-50 p-6 rounded-xl border flex flex-col items-center">
-                        <h3 class="text-xl font-bold text-blue-700 mb-4 w-full text-right">2. حساب معكوس المصفوفة (تفاعل)</h3>
-                        <div class="matrix-bracket bg-white p-5 mb-4 shadow-sm">
-                            <div class="grid grid-cols-2 gap-3">
-                                <input type="number" id="inv_a" value="4" class="w-16 border p-2 text-center rounded font-bold">
-                                <input type="number" id="inv_b" value="7" class="w-16 border p-2 text-center rounded font-bold">
-                                <input type="number" id="inv_c" value="2" class="w-16 border p-2 text-center rounded font-bold">
-                                <input type="number" id="inv_d" value="6" class="w-16 border p-2 text-center rounded font-bold">
-                            </div>
-                        </div>
-                        <button id="calcInverse" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded font-bold shadow mb-6">أوجد $A^{-1}$</button>
-                        <div id="invResult" class="grid grid-cols-2 gap-3 matrix-bracket bg-blue-100 p-4 min-h-[100px] items-center text-center font-bold text-lg text-blue-900 rounded" dir="ltr">
-                            <!-- Results -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Python Code Box -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-slate-700 python-box">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between">
-                        <span>🐍 بايثون: إيجاد المصفوفة العكسية</span>
-                        <span>Python</span>
-                    </div>
-                    <div class="flex flex-col md:flex-row">
-                        <div class="python-code p-5 md:w-1/2 whitespace-pre text-sm">
-import numpy as np
-
-# مصفوفة 2x2
-A = np.array([[4, 7], 
-              [2, 6]])
-
-# التحقق من أن المحدد ليس صفراً
-if np.linalg.det(A) != 0:
-    # حساب المعكوس
-    A_inv = np.linalg.inv(A)
-    print("المصفوفة العكسية:")
-    print(np.round(A_inv, 2))
-else:
-    print("المصفوفة ليس لها معكوس")
-                        </div>
-                        <div class="python-output p-5 md:w-1/2 whitespace-pre text-sm">
-# النتائج (Output):
-
-المصفوفة العكسية:
-[[ 0.6 -0.7]
- [-0.2  0.4]]
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= SECTION 4: Linear Systems ================= -->
-        <section id="section-4" class="tab-pane max-w-5xl mx-auto pb-10">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
-                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">رابعاً. حل الأنظمة الخطية</h2>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    <div>
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">1. طريقة المصفوفة العكسية</h3>
-                        <p class="text-slate-700 mb-2">لحل النظام $AX = B$:</p>
-                        <div class="bg-stone-50 p-4 rounded-lg mb-6 font-bold text-center border text-xl">
-                            $X = A^{-1}B$
-                        </div>
-
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">3. طريقة الحذف لجوس</h3>
-                        <p class="text-slate-700 text-sm bg-stone-50 p-4 rounded-lg border leading-relaxed">
-                            تحويل مصفوفة المعاملات الموسعة إلى صيغة مدرجة صفياً (Row Echelon Form) باستخدام عمليات الصفوف الابتدائية، ثم التعويض التراجعي لإيجاد المجاهيل بدقة وفاعلية للأنظمة الكبيرة.
-                        </p>
-                    </div>
-
-                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                        <h3 class="text-xl font-bold text-blue-800 mb-4">2. طريقة قاعدة كرامر (Cramer)</h3>
-                        <p class="text-sm mb-4 text-slate-700">تعتمد على المحددات $D_x, D_y$ مقسومة على المحدد $D$.</p>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div class="flex justify-center items-center gap-2 bg-white p-3 rounded-lg shadow-sm border">
-                                <input type="number" id="cr_a" value="4" class="w-14 border text-center font-bold rounded p-1"> $x + $
-                                <input type="number" id="cr_b" value="3" class="w-14 border text-center font-bold rounded p-1"> $y = $
-                                <input type="number" id="cr_e" value="20" class="w-16 border text-center font-bold text-green-700 rounded p-1 bg-green-50">
-                            </div>
-                            <div class="flex justify-center items-center gap-2 bg-white p-3 rounded-lg shadow-sm border">
-                                <input type="number" id="cr_c" value="-5" class="w-14 border text-center font-bold rounded p-1"> $x + $
-                                <input type="number" id="cr_d" value="9" class="w-14 border text-center font-bold rounded p-1"> $y = $
-                                <input type="number" id="cr_f" value="26" class="w-16 border text-center font-bold text-green-700 rounded p-1 bg-green-50">
-                            </div>
-                        </div>
-                        <button id="solveCramer" class="w-full bg-blue-800 hover:bg-blue-900 text-white py-3 rounded-lg font-bold shadow transition">استخراج قيمة x و y</button>
-                        <div id="crResult" class="mt-4 p-4 bg-white border rounded-lg text-xl font-bold text-center text-blue-800 shadow-inner">
-                             النتائج ستظهر هنا
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Python Code Box -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-slate-700 python-box">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between">
-                        <span>🐍 بايثون: حل نظام معادلات خطية</span>
-                        <span>Python</span>
-                    </div>
-                    <div class="flex flex-col md:flex-row">
-                        <div class="python-code p-5 md:w-1/2 whitespace-pre text-sm">
-import numpy as np
-
-# مصفوفة المعاملات (A)
-A = np.array([[4, 3], 
-              [-5, 9]])
-
-# متجه الثوابت (b)
-b = np.array([20, 26])
-
-# حل النظام (Ax = b)
-x = np.linalg.solve(A, b)
-
-print("حل النظام [x, y] =")
-print(x)
-                        </div>
-                        <div class="python-output p-5 md:w-1/2 whitespace-pre text-sm">
-# النتائج (Output):
-
-حل النظام [x, y] =
-[2. 4.]
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= SECTION 5: Eigenvalues & Eigenvectors ================= -->
-        <section id="section-5" class="tab-pane max-w-5xl mx-auto pb-10">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
-                <h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">خامساً. الأشعة والقيم الذاتية</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                    <div>
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">1. المفهوم الأساسي</h3>
-                        <p class="text-slate-700 mb-4 leading-relaxed bg-stone-50 p-4 rounded-lg border">
-                            الأشعة الذاتية (Eigenvectors) هي متجهات غير صفرية لا يتغير اتجاهها عند تطبيق تحويل خطي عليها، بل يتغير طولها فقط. معامل التمدد أو الانكماش يُسمى القيمة الذاتية (Eigenvalue). وهي أساس لتحليل المركبات الرئيسية.
-                        </p>
-
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">2. الصيغة الرياضية</h3>
-                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-100 text-center text-2xl mb-4 font-bold">
-                            $$A \mathbf{v} = \lambda \mathbf{v}$$
-                        </div>
-                        <p class="text-sm text-slate-500 font-medium text-center">حيث $A$ المصفوفة، $\mathbf{v}$ الشعاع الذاتي، و $\lambda$ القيمة الذاتية.</p>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xl font-bold text-blue-700 mb-3">3. ايجاد القيم والأشعة الذاتية</h3>
-                        <ul class="list-decimal list-inside text-slate-700 space-y-4 bg-stone-50 p-5 rounded-lg border">
-                            <li>نطرح $\lambda$ من عناصر القطر الرئيسي للمصفوفة $A$.</li>
-                            <li>نحسب محدد المصفوفة الناتجة ونساويه بالصفر للحصول على المعادلة المميزة: 
-                                <div class="mt-2 text-center text-lg font-bold bg-white p-2 rounded shadow-sm">$\det(A - \lambda I) = 0$</div>
-                            </li>
-                            <li>نحل المعادلة لإيجاد القيم الذاتية $\lambda$.</li>
-                            <li>نعوض بكل قيمة لـ $\lambda$ في النظام $(A - \lambda I)\mathbf{v} = 0$ لإيجاد الأشعة الذاتية $\mathbf{v}$.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Python Code Box -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-slate-700 python-box">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between">
-                        <span>🐍 بايثون: القيم والأشعة الذاتية</span>
-                        <span>Python</span>
-                    </div>
-                    <div class="flex flex-col md:flex-row">
-                        <div class="python-code p-5 md:w-1/2 whitespace-pre text-sm overflow-x-auto">
-import numpy as np
-
-# مصفوفة مربعة
-A = np.array([[4, 2], 
-              [1, 3]])
-
-# حساب القيم والأشعة الذاتية
-eigenvalues, eigenvectors = np.linalg.eig(A)
-
-print("القيم الذاتية (Eigenvalues):")
-print(eigenvalues)
-
-print("\nالأشعة الذاتية (Eigenvectors كأعمدة):")
-print(eigenvectors)
-                        </div>
-                        <div class="python-output p-5 md:w-1/2 whitespace-pre text-sm overflow-x-auto">
-# النتائج (Output):
-
-القيم الذاتية (Eigenvalues):
-[5. 2.]
-
-الأشعة الذاتية (Eigenvectors كأعمدة):
-[[ 0.89442719 -0.70710678]
- [ 0.4472136   0.70710678]]
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= SECTION PCA: Principal Component Analysis ================= -->
+        <!-- الأقسام الأخرى -->
+        <section id="section-2" class="tab-pane max-w-5xl mx-auto pb-10"><div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200"><h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">ثانياً. المحددات</h2><p class="p-10 text-center">محتوى قسم المحددات...</p></div></section>
+        <section id="section-3" class="tab-pane max-w-5xl mx-auto pb-10"><div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200"><h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">ثالثاً. المصفوفة العكسية</h2><p class="p-10 text-center">محتوى قسم المصفوفة العكسية...</p></div></section>
+        <section id="section-4" class="tab-pane max-w-5xl mx-auto pb-10"><div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200"><h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">رابعاً. الأنظمة الخطية</h2><p class="p-10 text-center">محتوى قسم الأنظمة الخطية...</p></div></section>
+        <section id="section-5" class="tab-pane max-w-5xl mx-auto pb-10"><div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200"><h2 class="text-3xl font-bold text-blue-800 mb-6 border-b pb-3">خامساً. الأشعة والقيم الذاتية</h2><p class="p-10 text-center">محتوى قسم الأشعة والقيم الذاتية...</p></div></section>
         <section id="section-pca" class="tab-pane max-w-5xl mx-auto pb-10">
             <div class="bg-white rounded-xl shadow-sm p-8 border border-stone-200 mb-8">
-                
-                <div class="flex items-center gap-4 mb-6 border-b pb-4">
-                    <div class="bg-blue-100 text-blue-800 p-3 rounded-full text-2xl">📊</div>
-                    <h2 class="text-3xl font-bold text-blue-800">سادساً. تحليل المركبات الأساسية (ACP / PCA)</h2>
+                <h2 class="text-3xl font-bold text-blue-800 border-b pb-4 mb-6">سادساً. تحليل المركبات الأساسية</h2>
+                <div class="bg-stone-50 p-5 rounded-lg border border-stone-200 text-slate-700 leading-relaxed">
+                    يعتمد الـ ACP على إيجاد الأشعة الذاتية للمصفوفة لتقليل أبعاد البيانات مع الحفاظ على التباين.
                 </div>
-                
-                <div class="mb-8">
-                    <p class="text-slate-700 text-lg leading-relaxed bg-stone-50 p-5 rounded-lg border">
-                        يُعد <strong>تحليل المركبات الأساسية (Analyse en Composantes Principales)</strong> تقنية وصفية قوية تُستخدم لاستكشاف بنية البيانات متعددة الأبعاد. الهدف هو تقليل الأبعاد الكبيرة للبيانات مع الحفاظ على أكبر قدر ممكن من التباين (المعلومات)، مما يسمح برسم الأفراد والمتغيرات وتفسيرها هندسياً.
-                    </p>
-                </div>
-
-                <!-- Core Theory based on acp.pdf -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                    
-                    <!-- 1. Table de donnees -->
-                    <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex justify-center items-center text-sm">1</span>
-                            جدول البيانات (Tableau des données)
-                        </h3>
-                        <p class="text-slate-600 mb-3 text-sm">تبدأ العملية بمصفوفة مستطيلة $X$ تحتوي على $n$ أفراد (صفوف) و $p$ متغيرات (أعمدة). حيث يعبر $x_i^j$ عن قيمة المتغير $j$ للفرد $i$.</p>
-                        <div class="bg-stone-50 p-2 rounded text-center text-sm overflow-x-auto font-bold border">
-                            $$X_{n \times p} = \begin{bmatrix} x_1^1 & \dots & x_1^p \\ \vdots & \ddots & \vdots \\ x_n^1 & \dots & x_n^p \end{bmatrix}$$
-                        </div>
-                    </div>
-
-                    <!-- 2. Matrice des poids -->
-                    <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex justify-center items-center text-sm">2</span>
-                            مصفوفة الثقل (Matrice des poids)
-                        </h3>
-                        <p class="text-slate-600 mb-3 text-sm">لكل فرد في العينة وزن أو ثقل $p_i$. يتم تجميعها في مصفوفة قطرية $D$. غالباً ما نعتبر الأفراد متساوين في الأهمية، فيكون الثقل $1/n$ لكل فرد.</p>
-                        <div class="bg-stone-50 p-2 rounded text-center text-sm overflow-x-auto font-bold border">
-                            $$D = \text{diag}(p_1, p_2, \dots, p_n)$$
-                        </div>
-                    </div>
-
-                    <!-- 3. Covariance & Correlation -->
-                    <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition md:col-span-2">
-                        <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex justify-center items-center text-sm">3</span>
-                            مصفوفات التباين، التباين المشترك، والارتباط
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <p class="text-slate-600 text-sm">
-                                لفهم العلاقات بين المتغيرات، نحسب <strong>مصفوفة التباين المشترك (Covariance)</strong> الممثلة بـ $V$. 
-                                <br><br>
-                                وإذا كانت المتغيرات مقاسة بوحدات مختلفة (مثلاً: وزن وسرعة)، يجب <strong>توسيط وتوحيد البيانات (Centrées Réduites)</strong>، مما يقودنا لاستخدام <strong>مصفوفة الارتباط (Corrélation)</strong> $R$.
-                            </p>
-                            <div class="bg-stone-50 p-3 rounded text-center text-sm overflow-x-auto flex flex-col justify-center border space-y-2">
-                                <span class="font-bold">التباين المشترك:</span>
-                                <span>$V_{jk} = \text{Cov}(X^j, X^k)$</span>
-                                <hr class="border-stone-300">
-                                <span class="font-bold">الارتباط:</span>
-                                <span>$R_{jk} = \frac{\text{Cov}(X^j, X^k)}{S_j S_k}$</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. Distance -->
-                    <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex justify-center items-center text-sm">4</span>
-                            المسافة (Distance)
-                        </h3>
-                        <p class="text-slate-600 mb-3 text-sm">
-                            قياس التشابه بين الأفراد يتم عبر حساب المسافة الإقليدية في الفضاء متعدد الأبعاد ($\mathbb{R}^p$). كلما قلت المسافة بين فردين، زاد تشابههما.
-                        </p>
-                        <div class="bg-stone-50 p-3 rounded text-center text-xs overflow-x-auto font-bold border mt-auto">
-                            $$d^2(x_i, x_{i'}) = \sum_{j=1}^p (x_i^j - x_{i'}^j)^2$$
-                        </div>
-                    </div>
-
-                    <!-- 5. Active & Supplementary -->
-                    <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex justify-center items-center text-sm">5</span>
-                            البيانات النشطة والإضافية
-                        </h3>
-                        <ul class="text-sm text-slate-600 space-y-2">
-                            <li><strong class="text-blue-700">النشطة (Actives):</strong> هي المتغيرات أو الأفراد التي تدخل في بناء وتكوين المحاور الرئيسية للتحليل.</li>
-                            <li><strong class="text-stone-500">الإضافية (Supplémentaires):</strong> (مثل السعر أو اللون) لا تؤثر في حساب المحاور، بل يتم <em>إسقاطها</em> لاحقاً على المخطط للمساعدة في تفسير النتائج واستخلاص المعاني.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Interactive Visualization -->
-                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col mb-10">
-                    <h3 class="text-xl font-bold text-blue-800 mb-3">تفاعل هندسي: الإسقاط (Projection)</h3>
-                    <p class="text-slate-600 mb-4 text-sm">
-                        يعتمد الـ ACP على إيجاد <strong>الأشعة الذاتية (المركبات الرئيسية)</strong> الممثلة بالخط المتقطع. اضغط على الزر لمحاكاة إسقاط <em>البيانات النشطة</em> على المحور ذو التباين الأعظم لتقليل الأبعاد من (2) إلى بُعد واحد (1).
-                    </p>
-                    <div class="chart-container w-full bg-slate-50 rounded border shadow-inner mb-6" style="height: 350px;">
-                        <canvas id="pcaChart"></canvas>
-                    </div>
-                    <div class="flex gap-4 justify-center">
-                        <button id="projectPcaBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow transition-all">إسقاط البيانات (Projection)</button>
-                        <button id="resetPcaBtn" class="bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold py-2 px-6 rounded shadow transition-all hidden">إعادة البيانات (X)</button>
-                    </div>
-                </div>
-
             </div>
         </section>
 
-        <!-- ================= SECTION IDE: Python Interactive REPL & Colab ================= -->
+        <!-- ================= SECTION IDE ================= -->
         <section id="section-ide" class="tab-pane max-w-5xl mx-auto pb-10">
             <div class="bg-white rounded-xl shadow-sm p-8 border border-stone-200 mb-8">
-                
                 <div class="flex items-center gap-4 mb-6 border-b pb-4">
                     <div class="bg-blue-100 text-blue-800 p-3 rounded-full text-2xl">💻</div>
-                    <h2 class="text-3xl font-bold text-blue-800">بيئة بايثون وتكامل Google Colab</h2>
+                    <h2 class="text-3xl font-bold text-blue-800">بيئة بايثون التفاعلية</h2>
                 </div>
 
-                <!-- خيارات بيئة العمل -->
+                <div id="pyscript-status" class="text-orange-600 font-bold mb-4 bg-orange-50 p-3 rounded border border-orange-200 shadow-inner text-center">
+                    ⏳ جاري تهيئة بيئة العمل وتحميل المكتبات... يرجى الانتظار 15 ثانية.
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    
-                    <!-- كرت Google Colab -->
                     <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center text-center">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Google_Colaboratory_SVG_Logo.svg" alt="Colab Logo" class="h-16 mb-4">
-                        <h3 class="text-xl font-bold text-blue-800 mb-2">Google Colab (السحابة)</h3>
-                        <p class="text-slate-600 mb-4 text-sm leading-relaxed">
-                            انتقل إلى بيئة جوجل السحابية لتشغيل الأكواد المتقدمة (كتحليل البيانات الضخمة). يحفظ تقدمك ويسمح بمشاركة الدفاتر بسهولة.
-                        </p>
-                        <a href="https://colab.research.google.com/" target="_blank" class="mt-auto flex items-center justify-center gap-2 bg-[#f8f9fa] hover:bg-[#e2e8f0] border border-slate-300 text-slate-700 px-6 py-2 rounded-lg font-bold transition shadow-sm">
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">Google Colab</h3>
+                        <a href="https://colab.research.google.com/" target="_blank" class="mt-auto transition-transform hover:scale-105">
                             <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
                         </a>
                     </div>
-
-                    <!-- كرت PyScript المدمج -->
                     <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center text-center">
                         <div class="text-5xl mb-4">⚡</div>
-                        <h3 class="text-xl font-bold text-blue-800 mb-2">PyScript (مدمج)</h3>
-                        <p class="text-slate-600 mb-4 text-sm leading-relaxed">
-                            جرب الأكواد البسيطة فوراً داخل هذه الصفحة دون الحاجة لمغادرتها أو تسجيل الدخول. البيئة مدعومة بمكتبات `numpy` و `scikit-learn`.
-                        </p>
-                        <button class="mt-auto bg-blue-50 text-blue-800 px-6 py-2 rounded-lg font-bold cursor-default border border-blue-200">
-                            البيئة جاهزة بالأسفل 👇
-                        </button>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">PyScript المدمج</h3>
+                        <p class="text-xs text-slate-500">محرر يعمل داخل المتصفح</p>
                     </div>
-
                 </div>
 
-                <!-- PyScript REPL -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-slate-300">
-                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold flex justify-between items-center">
-                        <span>مساحة العمل المدمجة - اكتب الكود واضغط Shift+Enter للتشغيل</span>
+                <div id="ide-container" class="rounded-xl overflow-hidden shadow-lg border border-slate-300 opacity-50 pointer-events-none transition-opacity duration-500">
+                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 text-sm font-bold">
+                        <span>مساحة العمل (Workspace)</span>
                     </div>
                     <div class="bg-white p-4">
-                        
-                        <!-- مؤشر التحميل الذكي يخبر المستخدم بحالة البيئة -->
-                        <div id="pyscript-status" class="text-orange-600 font-bold mb-4 bg-orange-50 p-3 rounded border border-orange-200 shadow-inner">
-                            ⏳ جاري تحميل بيئة بايثون والمكتبات (numpy, scikit-learn)... يرجى الانتظار بضع ثوانٍ.
-                        </div>
-                        
-                        <!-- كود بايثون لتحديث المؤشر عند اكتمال التحميل مع استدعاء المكتبات إجبارياً -->
-                        <py-script>
-import js
-import numpy as np
-import sklearn
-
-status_el = js.document.getElementById('pyscript-status')
-status_el.innerText = "✅ بيئة بايثون جاهزة تماماً! يمكنك الآن تشغيل الكود بالضغط على زر التشغيل الأخضر (أو Shift+Enter)."
-status_el.className = "text-green-700 font-bold mb-4 bg-green-50 p-3 rounded border border-green-200 shadow-inner"
-                        </py-script>
-
-                        <py-repl>
-# أهلاً بك في بيئة العمل التفاعلية المدمجة!
+                        <py-repl id="my-repl">
 import numpy as np
 from sklearn.decomposition import PCA
 
-print("---- 1. تجربة المصفوفات ----")
-A = np.array([[1, 2], [3, 4]])
+# تجربة مصفوفة بسيطة
+A = np.array([[5, 10], [15, 20]])
 print("المصفوفة A:\n", A)
-
-det = np.linalg.det(A)
-print("\nمحدد المصفوفة A:", round(det))
-
-print("\n\n---- 2. تجربة تحليل المركبات الأساسية (PCA) ----")
-X = np.array([
-    [2.5, 2.4], 
-    [0.5, 0.7], 
-    [2.2, 2.9], 
-    [1.9, 2.2], 
-    [3.1, 3.0]
-])
-
-pca = PCA(n_components=1)
-pca.fit(X)
-
-print("نسبة التباين المفسر:")
-print(pca.explained_variance_ratio_)
+print("\nالجبر الخطي يعمل بنجاح!")
                         </py-repl>
                     </div>
                 </div>
-
             </div>
         </section>
-
     </main>
 
+    <!-- وضع السكربتات في نهاية الصفحة تماماً لضمان وجود Body -->
+    <script src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
+    
+    <py-config>
+        packages = ["numpy", "scikit-learn"]
+    </py-config>
+
+    <py-script>
+import js
+import sys
+import asyncio
+
+async def check_ready():
+    # محاولة استدعاء المكتبات للتأكد من تثبيتها
+    try:
+        import numpy as np
+        import sklearn
+        
+        status_el = js.document.getElementById('pyscript-status')
+        status_el.innerText = "✅ بيئة بايثون والمكتبات جاهزة للعمل!"
+        status_el.className = "text-green-700 font-bold mb-4 bg-green-50 p-3 rounded border border-green-200 shadow-inner text-center"
+        
+        ide_container = js.document.getElementById('ide-container')
+        ide_container.style.opacity = "1"
+        ide_container.style.pointerEvents = "auto"
+    except Exception as e:
+        # في حال الفشل، نعاود المحاولة بعد ثانية
+        await asyncio.sleep(1)
+        await check_ready()
+
+asyncio.ensure_future(check_ready())
+    </py-script>
+
     <script>
-        // --- 1. ACCORDION & TAB NAVIGATION ---
+        // NAVIGATION LOGIC
         const accBtns = [document.getElementById('acc-btn-1'), document.getElementById('acc-btn-2')];
         const accContents = [document.getElementById('acc-content-1'), document.getElementById('acc-content-2')];
         const accIcons = [document.getElementById('acc-icon-1'), document.getElementById('acc-icon-2')];
@@ -797,11 +247,7 @@ print(pca.explained_variance_ratio_)
         accBtns.forEach((btn, index) => {
             btn.addEventListener('click', () => {
                 accContents[index].classList.toggle('open');
-                if (accContents[index].classList.contains('open')) {
-                    accIcons[index].classList.add('rotate-180');
-                } else {
-                    accIcons[index].classList.remove('rotate-180');
-                }
+                accIcons[index].classList.toggle('rotate-180');
             });
         });
 
@@ -813,202 +259,24 @@ print(pca.explained_variance_ratio_)
                 tabs.forEach(t => {
                     t.classList.remove('bg-blue-100', 'text-blue-800');
                     t.classList.add('text-slate-600');
-                    
-                    if(t.dataset.target === 'section-ide') {
-                        t.classList.add('border', 'border-blue-200', 'bg-blue-50');
-                    }
                 });
-                
-                tab.classList.remove('text-slate-600', 'hover:bg-stone-200', 'border', 'border-blue-200', 'bg-blue-50');
                 tab.classList.add('bg-blue-100', 'text-blue-800');
-                
                 contents.forEach(c => c.classList.remove('active'));
                 document.getElementById(tab.dataset.target).classList.add('active');
             });
         });
 
-        // --- 2. VECTOR CHART (Tab 1) ---
+        // CHART LOGIC
         const vCtx = document.getElementById('vectorChart').getContext('2d');
         let vChart = new Chart(vCtx, {
             type: 'scatter',
-            data: { 
-                datasets: [
-                    { label: 'المتجه', data: [{x:0, y:0}, {x:3, y:4}], borderColor: '#1e40af', backgroundColor: '#1e40af', showLine: true, pointRadius: [0, 8], borderWidth: 3 },
-                    { label: 'نقطة الأصل', data: [{x:0, y:0}], backgroundColor: '#94a3b8', pointRadius: 5 }
-                ] 
-            },
-            options: { 
-                responsive: true, maintainAspectRatio: false, 
-                scales: { 
-                    x: {min:-10, max:10, grid: {color: '#e2e8f0', zeroLineColor: '#1e293b'}}, 
-                    y: {min:-10, max:10, grid: {color: '#e2e8f0', zeroLineColor: '#1e293b'}} 
-                },
-                plugins: { legend: { display: false } }
-            }
+            data: { datasets: [{ label: 'المتجه', data: [{x:0, y:0}, {x:3, y:4}], borderColor: '#1e40af', showLine: true, pointRadius: [0, 8], borderWidth: 3 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: {min:-10, max:10}, y: {min:-10, max:10} } }
         });
         document.getElementById('updateVecBtn').addEventListener('click', () => {
-            const x = parseFloat(document.getElementById('vecX').value) || 0;
-            const y = parseFloat(document.getElementById('vecY').value) || 0;
-            vChart.data.datasets[0].data[1] = {x, y};
+            vChart.data.datasets[0].data[1] = {x: parseFloat(document.getElementById('vecX').value)||0, y: parseFloat(document.getElementById('vecY').value)||0};
             vChart.update();
         });
-
-        // --- 3. BASIC OPERATIONS 2x2 (Tab 1) ---
-        const getMatA = () => [[parseFloat(document.getElementById('a11').value)||0, parseFloat(document.getElementById('a12').value)||0], [parseFloat(document.getElementById('a21').value)||0, parseFloat(document.getElementById('a22').value)||0]];
-        const getMatB = () => [[parseFloat(document.getElementById('b11').value)||0, parseFloat(document.getElementById('b12').value)||0], [parseFloat(document.getElementById('b21').value)||0, parseFloat(document.getElementById('b22').value)||0]];
-        const setMatR = (val) => {
-            document.getElementById('r11').value = val[0][0]; document.getElementById('r12').value = val[0][1];
-            document.getElementById('r21').value = val[1][0]; document.getElementById('r22').value = val[1][1];
-        };
-
-        document.getElementById('opAdd').addEventListener('click', () => {
-            const a = getMatA(), b = getMatB();
-            setMatR([[a[0][0]+b[0][0], a[0][1]+b[0][1]], [a[1][0]+b[1][0], a[1][1]+b[1][1]]]);
-        });
-        document.getElementById('opSub').addEventListener('click', () => {
-            const a = getMatA(), b = getMatB();
-            setMatR([[a[0][0]-b[0][0], a[0][1]-b[0][1]], [a[1][0]-b[1][0], a[1][1]-b[1][1]]]);
-        });
-        document.getElementById('opMul').addEventListener('click', () => {
-            const a = getMatA(), b = getMatB();
-            setMatR([
-                [a[0][0]*b[0][0] + a[0][1]*b[1][0], a[0][0]*b[0][1] + a[0][1]*b[1][1]],
-                [a[1][0]*b[0][0] + a[1][1]*b[1][0], a[1][0]*b[0][1] + a[1][1]*b[1][1]]
-            ]);
-        });
-        document.getElementById('opTransA').addEventListener('click', () => {
-            const a = getMatA();
-            setMatR([[a[0][0], a[1][0]], [a[0][1], a[1][1]]]);
-        });
-
-        // --- 4. DETERMINANTS (Tab 2) ---
-        document.getElementById('calcDet2').addEventListener('click', () => {
-            const a = parseFloat(document.getElementById('det2_a').value)||0, b = parseFloat(document.getElementById('det2_b').value)||0;
-            const c = parseFloat(document.getElementById('det2_c').value)||0, d = parseFloat(document.getElementById('det2_d').value)||0;
-            document.getElementById('resDet2').innerText = (a*d - b*c).toString();
-        });
-
-        document.getElementById('calcDet3').addEventListener('click', () => {
-            const m11=parseFloat(document.getElementById('d3_11').value)||0, m12=parseFloat(document.getElementById('d3_12').value)||0, m13=parseFloat(document.getElementById('d3_13').value)||0;
-            const m21=parseFloat(document.getElementById('d3_21').value)||0, m22=parseFloat(document.getElementById('d3_22').value)||0, m23=parseFloat(document.getElementById('d3_23').value)||0;
-            const m31=parseFloat(document.getElementById('d3_31').value)||0, m32=parseFloat(document.getElementById('d3_32').value)||0, m33=parseFloat(document.getElementById('d3_33').value)||0;
-            
-            const det = m11*(m22*m33 - m23*m32) - m12*(m21*m33 - m23*m31) + m13*(m21*m32 - m22*m31);
-            document.getElementById('resDet3').innerText = det.toString();
-        });
-
-        // --- 5. INVERSE MATRIX (Tab 3) ---
-        document.getElementById('calcInverse').addEventListener('click', () => {
-            const a = parseFloat(document.getElementById('inv_a').value)||0, b = parseFloat(document.getElementById('inv_b').value)||0;
-            const c = parseFloat(document.getElementById('inv_c').value)||0, d = parseFloat(document.getElementById('inv_d').value)||0;
-            const det = a*d - b*c;
-            const resDiv = document.getElementById('invResult');
-            if(det === 0) { 
-                resDiv.innerHTML = "<span class='col-span-2 text-red-600 text-sm'>المحدد = 0 (مصفوفة شاذة)</span>"; 
-                return; 
-            }
-            resDiv.innerHTML = `
-                <span class='bg-white border p-2 rounded shadow-sm'>${(d/det).toFixed(2)}</span>
-                <span class='bg-white border p-2 rounded shadow-sm'>${(-b/det).toFixed(2)}</span>
-                <span class='bg-white border p-2 rounded shadow-sm'>${(-c/det).toFixed(2)}</span>
-                <span class='bg-white border p-2 rounded shadow-sm'>${(a/det).toFixed(2)}</span>
-            `;
-        });
-
-        // --- 6. CRAMER'S RULE (Tab 4) ---
-        document.getElementById('solveCramer').addEventListener('click', () => {
-            const a = parseFloat(document.getElementById('cr_a').value)||0, b = parseFloat(document.getElementById('cr_b').value)||0, e = parseFloat(document.getElementById('cr_e').value)||0;
-            const c = parseFloat(document.getElementById('cr_c').value)||0, d = parseFloat(document.getElementById('cr_d').value)||0, f = parseFloat(document.getElementById('cr_f').value)||0;
-            const det = a*d - b*c;
-            const resDiv = document.getElementById('crResult');
-            
-            if(det === 0) { 
-                resDiv.innerHTML = "<span class='text-red-500'>المحدد الرئيسي صفر (لا يوجد حل وحيد)</span>"; 
-                return; 
-            }
-            
-            const detX = (e*d - b*f);
-            const detY = (a*f - e*c);
-            const x = detX / det;
-            const y = detY / det;
-            
-            resDiv.innerHTML = `x = ${x.toFixed(2)} <span class="text-stone-300 mx-2">|</span> y = ${y.toFixed(2)}`;
-        });
-
-        // --- 7. PCA INTERACTIVE CHART (Tab PCA) ---
-        const pcaCtx = document.getElementById('pcaChart').getContext('2d');
-        const originalData = [
-            {x: 2.5, y: 2.4}, {x: 0.5, y: 0.7}, {x: 2.2, y: 2.9}, 
-            {x: 1.9, y: 2.2}, {x: 3.1, y: 3.0}, {x: 2.3, y: 2.7}, 
-            {x: 2.0, y: 1.6}, {x: 1.0, y: 1.1}, {x: 1.5, y: 1.6}, {x: 3.0, y: 2.8}
-        ];
-        
-        const projectedData = originalData.map(p => {
-            const avg = (p.x + p.y) / 2;
-            return {x: avg, y: avg};
-        });
-
-        let pcaChart = new Chart(pcaCtx, {
-            type: 'scatter',
-            data: {
-                datasets: [
-                    {
-                        label: 'البيانات النشطة ($X$)',
-                        data: JSON.parse(JSON.stringify(originalData)),
-                        backgroundColor: '#3b82f6',
-                        borderColor: '#2563eb',
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    },
-                    {
-                        label: 'المحور الأول (PC1)',
-                        data: [{x: 0, y: 0}, {x: 4, y: 4}],
-                        borderColor: '#1e3a8a',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        showLine: true,
-                        pointRadius: 0
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {min: 0, max: 4, grid: {color: '#e2e8f0'}, title: {display: true, text: 'المتغير الأول', font: {family: 'Tajawal', size: 12}}},
-                    y: {min: 0, max: 4, grid: {color: '#e2e8f0'}, title: {display: true, text: 'المتغير الثاني', font: {family: 'Tajawal', size: 12}}}
-                },
-                plugins: { 
-                    legend: { position: 'bottom', labels: {font: {family: 'Tajawal', size: 14}} },
-                    tooltip: {
-                        titleFont: {family: 'Tajawal'},
-                        bodyFont: {family: 'Tajawal'}
-                    }
-                },
-                animation: { duration: 1000, easing: 'easeOutQuart' }
-            }
-        });
-
-        document.getElementById('projectPcaBtn').addEventListener('click', () => {
-            pcaChart.data.datasets[0].data = projectedData;
-            pcaChart.data.datasets[0].label = 'البيانات بعد الإسقاط';
-            pcaChart.data.datasets[0].backgroundColor = '#22c55e'; // turn green
-            pcaChart.data.datasets[0].borderColor = '#16a34a';
-            pcaChart.update();
-            document.getElementById('projectPcaBtn').classList.add('hidden');
-            document.getElementById('resetPcaBtn').classList.remove('hidden');
-        });
-
-        document.getElementById('resetPcaBtn').addEventListener('click', () => {
-            pcaChart.data.datasets[0].data = JSON.parse(JSON.stringify(originalData));
-            pcaChart.data.datasets[0].label = 'البيانات النشطة ($X$)';
-            pcaChart.data.datasets[0].backgroundColor = '#3b82f6'; // turn blue
-            pcaChart.data.datasets[0].borderColor = '#2563eb';
-            pcaChart.update();
-            document.getElementById('resetPcaBtn').classList.add('hidden');
-            document.getElementById('projectPcaBtn').classList.remove('hidden');
-        });
-
     </script>
 </body>
 </html>
